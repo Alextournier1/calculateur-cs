@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calcule ta vitesse critique et tes allures d'entraînement, Athlètes Hybrides</title>
+<meta name="description" content="Test Critical Speed officiel : découvre ta vitesse critique, ta VMA estimée et tes zones d'allure d'entraînement en 2 minutes.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #181818;
+    --surface-2: #1f1f1f;
+    --border: #2c2c2a;
+    --text: #f4f2ec;
+    --text-mid: #b4b2a9;
+    --text-dim: #7a7972;
+    --accent: #E8440A;
+    --accent-dim: #c43208;
+    --accent-pale: #E8440A1a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+
+  /* HERO */
+  .hero { padding: 56px 0 36px; text-align: center; border-bottom: 1px solid var(--border); }
+  .eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px; display: block;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: clamp(28px, 6.5vw, 42px); line-height: 1.12; letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p.sub { font-size: 15.5px; color: var(--text-mid); max-width: 460px; margin: 0 auto; }
+  .hero-meta { display: flex; justify-content: center; gap: 22px; margin-top: 24px; flex-wrap: wrap; }
+  .hero-meta span { font-size: 12.5px; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block; }
+
+  /* SECTION */
+  .section { padding: 36px 0; }
+  .section-title {
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 19px;
+    margin-bottom: 6px;
+  }
+  .section-sub { font-size: 13.5px; color: var(--text-dim); margin-bottom: 22px; }
+
+  /* PROTOCOL STEPS */
+  .proto-step {
+    display: flex; gap: 14px; padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .proto-step:last-child { border-bottom: none; }
+  .proto-num {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px;
+    color: var(--accent); flex-shrink: 0; width: 22px; padding-top: 2px;
+  }
+  .proto-text strong { font-weight: 700; color: var(--text); }
+  .proto-text { font-size: 14px; color: var(--text-mid); }
+
+  .video-frame {
+    width: 100%; aspect-ratio: 16 / 9; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 14px; margin-bottom: 18px;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .video-frame iframe { width: 100%; height: 100%; border: none; }
+  .video-link-fallback { display: block; width: 100%; height: 100%; position: relative; text-decoration: none; }
+  .video-play-overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    color: #fff; font-size: 13.5px; font-weight: 700;
+  }
+  .video-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    color: var(--text-dim); font-size: 13px;
+  }
+
+  /* CARD / FORM */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 26px 22px;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-size: 12.5px; font-weight: 700; color: var(--text-mid);
+    margin-bottom: 7px; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  input, select {
+    width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px;
+    padding: 11px 13px; border-radius: 8px; outline: none;
+  }
+  input::placeholder { color: var(--text-dim); }
+  input:focus, select:focus { border-color: var(--accent); }
+  .unit { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  .btn {
+    width: 100%; background: var(--accent); color: #fff; border: none;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px;
+    padding: 14px 18px; border-radius: 8px; cursor: pointer; margin-top: 6px;
+    transition: background .15s ease;
+  }
+  .btn:hover { background: var(--accent-dim); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-secondary {
+    background: transparent; border: 1px solid var(--border); color: var(--text);
+  }
+  .btn-secondary:hover { background: var(--surface-2); border-color: var(--text-dim); }
+
+  .err { font-size: 12.5px; color: #f0997b; margin-top: 6px; display: none; }
+
+  /* RESULT TEASER */
+  .result-teaser { display: none; text-align: center; padding: 28px 0 8px; }
+  .result-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 4px; }
+  .result-block { padding: 4px 2px; }
+  .result-big {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 36px;
+    color: var(--accent); line-height: 1;
+  }
+  .result-label { font-size: 11.5px; color: var(--text-mid); margin-top: 8px; }
+  @media (max-width: 420px) {
+    .result-row { grid-template-columns: 1fr; gap: 18px; }
+  }
+  .blur-zone {
+    margin-top: 18px; padding: 16px; background: var(--surface); border-radius: 10px;
+    border: 1px dashed var(--border); position: relative;
+  }
+  .blur-zone-inner { filter: blur(5px); user-select: none; pointer-events: none; }
+  .blur-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 4px; background: rgba(15,15,15,0.55); border-radius: 10px;
+  }
+  .blur-overlay span { font-size: 12.5px; font-weight: 700; color: var(--text); }
+  .blur-overlay small { font-size: 11.5px; color: var(--text-dim); }
+
+  /* GATE FORM */
+  .gate { display: none; margin-top: 28px; }
+  .gate-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 17px; margin-bottom: 4px; }
+  .gate-sub { font-size: 13.5px; color: var(--text-dim); margin-bottom: 20px; }
+
+  /* UNLOCKED RESULT */
+  .unlocked { display: none; }
+  .zone-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+  .zone-table th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--text-dim); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--border);
+  }
+  .zone-table td { padding: 11px 10px; font-size: 14px; border-bottom: 1px solid var(--border); }
+  .zone-table tr:last-child td { border-bottom: none; }
+  .zone-name { font-weight: 700; }
+  .zone-pace { color: var(--accent); font-weight: 700; }
+
+  .plan-teaser {
+    margin-top: 24px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 20px;
+  }
+  .plan-week { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .plan-week:last-child { border-bottom: none; }
+  .plan-week-num { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); width: 60px; flex-shrink: 0; font-size: 12.5px; }
+  .plan-week-text { color: var(--text-mid); }
+
+  .fiber-block {
+    font-size: 13px; color: var(--text-mid); padding: 10px 0; border-top: 1px solid var(--border);
+  }
+  .fiber-tag {
+    display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .04em; color: var(--accent); margin-bottom: 4px;
+  }
+  .fiber-why {
+    font-size: 12.5px; color: var(--text-dim); line-height: 1.5; padding-top: 2px;
+  }
+  .fiber-why i { font-style: normal; font-weight: 500; color: var(--text-mid); }
+
+  .cs-explain {
+    margin-top: 12px; padding: 14px 16px; border-radius: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 13px; color: var(--text-mid); line-height: 1.6;
+  }
+  .cs-explain strong { color: var(--text); font-weight: 700; }
+
+  .fiber-badge {
+    margin-top: 12px; padding: 14px 16px; border-radius: 10px;
+    font-size: 13px; line-height: 1.6;
+  }
+  .fiber-badge strong { font-weight: 700; display: block; font-size: 13.5px; margin-bottom: 4px; }
+  .fiber-badge.st { background: #0f2a3f; border: 1px solid #1e6fa0; color: #a8d4f0; }
+  .fiber-badge.st strong { color: #5bb8f5; }
+  .fiber-badge.ft { background: #2d1200; border: 1px solid var(--accent); color: #f0b48a; }
+  .fiber-badge.ft strong { color: var(--accent); }
+  .fiber-badge.hybrid { background: #1a1a2e; border: 1px solid #6c63ff; color: #b0adf5; }
+  .fiber-badge.hybrid strong { color: #9b95ff; }
+
+  .btn-calendly {
+    display: block; width: 100%; background: var(--accent); color: #fff; border: none;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px;
+    padding: 14px 18px; border-radius: 8px; cursor: pointer; margin-top: 14px;
+    text-decoration: none; text-align: center; transition: background .15s ease;
+  }
+  .btn-calendly:hover { background: var(--accent-dim); }
+
+  .cta-final {
+    margin-top: 26px; text-align: center; padding: 24px 20px;
+    background: var(--accent-pale); border: 1px solid var(--accent); border-radius: 12px;
+  }
+  .cta-final h3 { font-family: 'Syne', sans-serif; font-size: 17px; margin-bottom: 8px; }
+  .cta-final p { font-size: 13.5px; color: var(--text-mid); margin-bottom: 16px; }
+  .pain-point {
+    background: var(--surface); border: 1px solid var(--accent); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 18px; text-align: left; font-size: 13.5px;
+    color: var(--text); line-height: 1.55;
+  }
+
+  footer { padding: 30px 0 50px; text-align: center; }
+  footer p { font-size: 12px; color: var(--text-dim); }
+  footer a { color: var(--text-dim); }
+
+  .spinner {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%; display: inline-block;
+    animation: spin .7s linear infinite; vertical-align: -3px; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; }
+    .hero { padding: 40px 0 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow">Athlètes Hybrides, test physiologique</span>
+    <h1>Connais ta <em>vraie</em> vitesse d'entraînement</h1>
+    <p class="sub">Le test Critical Speed, validé scientifiquement, pour calculer ta VMA réelle et tes zones d'allure exactes. Deux efforts, deux minutes de calcul.</p>
+    <div class="hero-meta">
+      <span><i class="dot"></i>Protocole Vanhatalo, Jones & Burnley</span>
+      <span><i class="dot"></i>Gratuit</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Le protocole</div>
+    <div class="section-sub">À réaliser sur piste ou parcours plat, par toi-même, avant de remplir le formulaire ci-dessous.</div>
+
+    <div class="video-frame" id="protocolVideo">
+      <video autoplay muted playsinline loop controls style="width:100%;height:100%;object-fit:cover;border-radius:13px;">
+        <source src="protocole-cs.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <div class="card" style="padding: 6px 22px;">
+      <div class="proto-step">
+        <div class="proto-num">01</div>
+        <div class="proto-text"><strong>Échauffement complet :</strong> 15 minutes de footing progressif + quelques accélérations.</div>
+      </div>
+      <div class="proto-step">
+        <div class="proto-num">02</div>
+        <div class="proto-text"><strong>Effort de 3 minutes à fond.</strong> Note la distance parcourue (en mètres).</div>
+      </div>
+      <div class="proto-step">
+        <div class="proto-num">03</div>
+        <div class="proto-text"><strong>30 minutes de récupération complète</strong>, marche légère uniquement.</div>
+      </div>
+      <div class="proto-step">
+        <div class="proto-num">04</div>
+        <div class="proto-text"><strong>Effort de 12 minutes à fond.</strong> Note la distance parcourue (en mètres).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Entre tes résultats</div>
+    <div class="section-sub">On calcule ta vitesse critique immédiatement.</div>
+
+    <div class="card" id="testCard">
+      <div class="field-row">
+        <div class="field">
+          <label for="d3">Distance en 3 min</label>
+          <input type="number" id="d3" placeholder="ex. 900" inputmode="numeric">
+          <div class="unit">en mètres</div>
+        </div>
+        <div class="field">
+          <label for="d12">Distance en 12 min</label>
+          <input type="number" id="d12" placeholder="ex. 3050" inputmode="numeric">
+          <div class="unit">en mètres</div>
+        </div>
+      </div>
+      <div class="err" id="testErr">Vérifie tes deux distances : le 12 minutes doit être supérieur au 3 minutes.</div>
+      <button class="btn" id="calcBtn" type="button">Calculer ma vitesse critique</button>
+    </div>
+
+    <div class="result-teaser" id="resultTeaser">
+      <div class="result-row">
+        <div class="result-block">
+          <div class="result-big" id="csValue">—</div>
+          <div class="result-label">Vitesse critique (km/h)</div>
+        </div>
+        <div class="result-block">
+          <div class="result-big" id="vmaTeaserValue">—</div>
+          <div class="result-label">VMA estimée (km/h)</div>
+        </div>
+        <div class="result-block">
+          <div class="result-big" id="profilTeaserValue" style="font-size: 26px;">—</div>
+          <div class="result-label">Profil fibreux dominant</div>
+        </div>
+      </div>
+
+      <div class="blur-zone">
+        <div class="blur-zone-inner">
+          <table class="zone-table">
+            <tr><th>Zone</th><th>Allure</th></tr>
+            <tr><td class="zone-name">Endurance fondamentale</td><td class="zone-pace">5:45–6:10/km</td></tr>
+            <tr><td class="zone-name">Seuil long</td><td class="zone-pace">4:32–4:48/km</td></tr>
+            <tr><td class="zone-name">Seuil court</td><td class="zone-pace">4:12–4:24/km</td></tr>
+          </table>
+        </div>
+        <div class="blur-overlay">
+          <span>Tes 6 zones d'allure exactes</span>
+          <small>+ tes prédictions de chrono + les pistes pour progresser selon ton profil</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="gate" id="gateForm">
+      <div class="gate-title">Débloque tes zones d'allure complètes</div>
+      <div class="gate-sub">Et tes prédictions de chrono, et toutes les pistes pour progresser selon ton profil.</div>
+      <div class="card">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="toi@exemple.com">
+        </div>
+        <div class="field">
+          <label for="phone">Téléphone</label>
+          <input type="tel" id="phone" placeholder="06 12 34 56 78">
+        </div>
+        <div class="field">
+          <label for="goal">Ton objectif / course visée</label>
+          <input type="text" id="goal" placeholder="ex. Marathon de Paris, premier 100km, reprise...">
+        </div>
+        <div class="err" id="gateErr">Merci de remplir les trois champs pour débloquer ton résultat.</div>
+        <button class="btn" id="unlockBtn" type="button">Débloquer mes zones et mon plan</button>
+      </div>
+    </div>
+
+    <div class="unlocked" id="unlockedSection">
+
+      <div class="cs-explain" id="csExplain"></div>
+      <div class="fiber-badge" id="fiberBadge"></div>
+
+      <div class="section-title" style="margin-top: 18px; margin-bottom: 2px;">Tes zones d'allure</div>
+      <div class="section-sub">VMA estimée : <strong id="vmaValue" style="color: var(--text)"></strong> km/h · Profil fibreux : <strong id="profilValue"></strong></div>
+      <div class="card">
+        <table class="zone-table" id="zoneTable"></table>
+      </div>
+
+      <div class="section-title" style="font-size: 15px; margin-top: 18px; margin-bottom: 2px;">Tes prédictions de chrono</div>
+      <div class="section-sub" style="margin-bottom: 12px;">Estimées à partir de ta vitesse critique, à titre indicatif.</div>
+      <div class="card">
+        <table class="zone-table" id="distTable"></table>
+      </div>
+
+      <div class="plan-teaser" id="planTeaser">
+        <div class="section-title" style="font-size: 15px; margin-bottom: 2px;" id="planTitle">Aperçu de structure de plan</div>
+        <div class="section-sub" id="planSub" style="margin-bottom: 12px;">Basé sur ton objectif, en plusieurs phases.</div>
+        <div id="planPhases"></div>
+      </div>
+
+      <div class="plan-teaser" id="fiberReco" style="margin-top: 14px;"></div>
+
+      <div class="cta-final">
+        <h3>La suite, c'est le plan complet et le suivi</h3>
+        <div id="painPoint" style="margin-top: 12px;"></div>
+        <p>Ce que tu vois ici, c'est la base scientifique. Pour aller plus loin et construire un plan complet semaine par semaine adapté à ton profil, réserve un appel gratuit de 20 minutes.</p>
+        <a href="https://calendly.com/alexandretournierpro/coaching-call" target="_blank" rel="noopener noreferrer" class="btn btn-calendly">Réserver mon appel gratuit de 20 min</a>
+        <p style="margin-top: 14px; margin-bottom: 0;"><a href="https://athleteshybrides.fr/avis" style="color: var(--accent); font-size: 13.5px; font-weight: 700; text-decoration: none;">Voir les retours d'athlètes accompagnés →</a></p>
+      </div>
+    </div>
+
+  </div>
+  <footer>
+    <p>Athlètes Hybrides, protocole Critical Speed (Vanhatalo, Jones &amp; Burnley, 2007)</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  // ⚠️ À REMPLACER avant mise en ligne : colle ici l'URL de ton formulaire Formspree
+  // (créée sur formspree.io, format https://formspree.io/f/xxxxxxxx)
+  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mlgyenyn';
+
+  var state = { d3: null, d12: null, cs: null, vma: null };
+
+  function round1(n) { return Math.round(n * 10) / 10; }
+
+  function paceFromKmh(kmh) {
+    var secPerKm = 3600 / kmh;
+    var min = Math.floor(secPerKm / 60);
+    var sec = Math.round(secPerKm % 60);
+    if (sec === 60) { min += 1; sec = 0; }
+    return min + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function fmtChrono(km, kmh) {
+    var totalSec = (km / kmh) * 3600;
+    var h = Math.floor(totalSec / 3600);
+    var m = Math.floor((totalSec % 3600) / 60);
+    var s = Math.round(totalSec % 60);
+    if (s === 60) { s = 0; m += 1; }
+    if (m === 60) { m = 0; h += 1; }
+    var mm = (m < 10 ? '0' : '') + m;
+    var ss = (s < 10 ? '0' : '') + s;
+    return h > 0 ? (h + ':' + mm + ':' + ss) : (mm + ':' + ss);
+  }
+
+  function profilFromWprime(wp) {
+    if (wp < 150) return 'ST · fibres lentes';
+    if (wp > 250) return 'FT · fibres rapides';
+    return 'Hybride';
+  }
+
+  function calcCS() {
+    var d3 = parseFloat(document.getElementById('d3').value);
+    var d12 = parseFloat(document.getElementById('d12').value);
+    var err = document.getElementById('testErr');
+
+    if (!d3 || !d12 || d12 <= d3 || d3 <= 0) {
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+
+    var cs = (d12 - d3) / 540; // m/s
+    var csKmh = round1(cs * 3.6);
+    var vma = round1(csKmh / 0.875);
+    var wPrime = Math.round(d3 - (csKmh / 3.6) * 180);
+    var profil = profilFromWprime(wPrime);
+
+    state.d3 = d3; state.d12 = d12; state.cs = csKmh; state.vma = vma;
+    state.wPrime = wPrime; state.profil = profil;
+
+    document.getElementById('csValue').textContent = csKmh;
+    document.getElementById('vmaTeaserValue').textContent = vma;
+    document.getElementById('profilTeaserValue').textContent = profil;
+    document.getElementById('resultTeaser').style.display = 'block';
+    document.getElementById('gateForm').style.display = 'block';
+    document.getElementById('resultTeaser').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  var FIBER_RECOS = {
+    ST: {
+      label: 'Profil endurant (ST)',
+      generic: {
+        text: 'Ton profil a une dominante de fibres lentes, plus denses en mitochondries et mieux irriguées en capillaires. Tu tolères donc naturellement bien le volume et récupères vite entre les efforts, mais ces fibres produisent moins de force contractile rapide. Le risque, c\'est de rester sur ce terrain confortable et de manquer de tranchant le jour de la course.',
+        examples: [
+          { title: 'Seuil progressif en paliers', text: '3 blocs de 8 minutes à allure seuil, chaque bloc légèrement plus rapide que le précédent, récupération de 90 secondes entre les blocs.', why: 'Ta meilleure clairance du lactate te permet d\'enchaîner ces blocs sans t\'effondrer. Faire progresser l\'allure à l\'intérieur même de la séance exploite cette capacité de récupération active plutôt que de répéter platement le même rythme.' },
+          { title: 'Côtes courtes répétées', text: '8 à 10 fois 30 secondes en montée à intensité élevée, descente en footing comme récupération.', why: 'Tes fibres lentes manquent naturellement de force explosive. La côte recrute davantage les fibres rapides sans le risque de blessure d\'un sprint sur plat, et muscle ton économie de course, point faible classique de ce profil.' }
+        ],
+        target: 'Repère concret de progression : courir un 1000m à une allure au moins 8 à 10% plus rapide que ton allure de course actuelle, en te sentant encore relâché.'
+      },
+      byDistance: {
+        '5k': {
+          text: 'Sur un format aussi court, la durée n\'est pas ton problème, la vitesse de pointe oui. Ton profil produit naturellement moins de force par fibre, il faut donc construire cette qualité plutôt que la fuir.',
+          examples: [
+            { title: 'Pyramide descendante', text: '400m, 300m, 200m, 100m à allure 1500m, récupération égale au temps de course entre chaque palier.', why: 'La distance qui se réduit progressivement permet de maintenir une vitesse élevée même quand la fatigue locale s\'installe, ce qui force le recrutement des fibres rapides que ton profil a tendance à sous-utiliser.' },
+            { title: 'Répétitions courtes à pleine fraîcheur', text: '10 fois 200m à allure 1500m, récupération complète de 2 minutes, séance placée en tout début de semaine pour démarrer reposé.', why: 'Une récupération complète entre chaque répétition garantit que chaque effort sollicite vraiment la filière rapide, sans accumulation de fatigue qui te ramènerait sur ton terrain naturel, l\'endurance.' }
+          ],
+          target: 'Repère concret de progression : courir 400m à une allure au moins 10 secondes par km plus rapide que ton allure cible sur 5km, sans forcer en fin de répétition.'
+        },
+        '10k': {
+          text: 'Tu tiens bien la distance, mais l\'allure de course plafonne vite. Le travail doit cibler la capacité à produire de la vitesse sans perdre ton avantage naturel d\'endurance.',
+          examples: [
+            { title: 'Seuil progressif en paliers', text: '3 blocs de 8 minutes à allure seuil, chaque bloc légèrement plus rapide que le précédent, récupération de 90 secondes entre les blocs.', why: 'Ta bonne tolérance lactique permet d\'enchaîner ces blocs en intensité croissante sans dérive cardiaque excessive, ce qui élève progressivement ton plafond d\'allure.' },
+            { title: 'Côtes moyennes en force', text: '6 fois 1 minute en montée modérée, intensité proche de l\'allure 3000m, retour en footing.', why: 'La pente t\'oblige à produire plus de force par foulée sans avoir besoin d\'une vitesse de jambes élevée, c\'est une façon détournée et peu risquée de développer la force que tes fibres lentes ne fournissent pas naturellement.' }
+          ],
+          target: 'Repère concret de progression : courir un 2000m à une allure plus rapide que ton allure cible sur 10km, en gardant une foulée relâchée jusqu\'au bout.'
+        },
+        'semi': {
+          text: 'Format qui te va naturellement bien grâce à ta bonne tolérance au volume. L\'enjeu est de ne jamais laisser ta VMA stagner pendant les semaines de gros volume.',
+          examples: [
+            { title: 'Seuil étendu avec finish rapide', text: '25 minutes continues à allure seuil, suivies sans pause de 4 fois 200m nettement plus rapides.', why: 'Terminer une séance de volume par un stimulus rapide en fatigue partielle force le système nerveux à recruter les fibres rapides même quand le terrain physiologique est dominé par l\'endurance, c\'est un double bénéfice dans une seule séance.' },
+            { title: 'Fartlek structuré', text: '6 fois un cycle de 3 minutes à allure seuil suivi d\'1 minute à allure 5km, sans récupération entre les cycles.', why: 'L\'alternance sans pause t\'oblige à gérer la transition d\'intensité en continu, une compétence que ton profil endurant ne développe jamais sur des séances uniformes.' }
+          ],
+          target: 'Repère concret de progression : tenir 5km d\'affilée à une allure nettement plus rapide que ton allure cible sur semi, en fin de préparation.'
+        },
+        'marathon': {
+          text: 'Profil très adapté à la distance grâce à la bonne tolérance au volume. Le vrai travail consiste à faire progresser l\'allure marathon elle-même, pas à accumuler du volume facile sans but précis.',
+          examples: [
+            { title: 'Sortie longue en negative split marqué', text: 'Les 10 derniers kilomètres d\'une sortie longue courus 15 à 20 secondes par km plus vite que les premiers.', why: 'Ta bonne économie sur la durée te permet d\'accélérer en fatigue, contrairement à un profil explosif qui s\'effondrerait. Cette séance entraîne directement le scénario que tu vivras en fin de marathon.' },
+            { title: 'Bloc allure marathon en deux temps', text: '12km à allure marathon, pause de 3 minutes en marchant, puis 6km supplémentaires à la même allure.', why: 'La courte pause casse l\'automatisme et t\'oblige à retrouver l\'allure cible à froid une seconde fois, ce qui renforce la mémoire motrice de cette vitesse précise mieux qu\'un effort continu.' }
+          ],
+          target: 'Repère concret de progression : courir 15km d\'affilée à allure marathon visée, sans dérive de fréquence cardiaque sur la fin.'
+        },
+        'trail': {
+          text: 'Bonne base pour la gestion longue durée grâce à la tolérance naturelle au volume. Le travail spécifique nécessaire porte sur le renforcement excentrique, ce que l\'endurance pure ne couvre pas.',
+          examples: [
+            { title: 'Répétitions de descente technique', text: '6 à 8 fois une portion de descente technique de 200 à 300m, remontée en marche active comme récupération.', why: 'Tes fibres lentes encaissent bien la fatigue cumulative mais sont moins préparées au travail excentrique violent des descentes. Répéter ce geste spécifiquement construit la résistance musculaire qui manque naturellement.' },
+            { title: 'Sortie vallonnée à allure mixte', text: 'Sortie de 90 minutes alternant portions roulantes rapides en plat et marche active soutenue en montée.', why: 'Cette alternance entraîne la capacité à changer de mode de propulsion rapidement, une compétence clé en trail que le travail uniquement plat ne développe jamais.' }
+          ],
+          target: 'Repère concret de progression : terminer une sortie longue avec dénivelé sans perte sensible de qualité technique dans les descentes finales.'
+        },
+        'ultra': {
+          text: 'Profil idéal pour l\'ultra grâce à la capacité naturelle à encaisser le volume avec peu de récupération. Le travail se concentre sur la gestion de l\'allure sur très longue durée et la nutrition en course, plus que sur la vitesse.',
+          examples: [
+            { title: 'Sortie longue à nutrition testée', text: 'Sortie de 4 à 5 heures à allure contrôlée et stable, avec protocole de nutrition identique à celui prévu en course.', why: 'À cette durée, c\'est la gestion énergétique et digestive qui détermine la performance bien plus que la vitesse pure, ton profil n\'a pas besoin d\'un travail d\'intensité pour ce format.' },
+            { title: 'Back to back, deux jours consécutifs', text: 'Sortie de 2h30 le samedi suivie d\'une sortie de 1h30 le dimanche, allure facile sur les deux.', why: 'Ta bonne récupération naturelle te permet d\'enchaîner ces deux sorties pour habituer le corps à courir sur des jambes déjà fatiguées, situation typique du milieu d\'un ultra.' }
+          ],
+          target: 'Repère concret de progression : avoir testé en conditions réelles un protocole de nutrition complet sur une sortie d\'au moins 4 heures.'
+        },
+        'reprise': {
+          text: 'Bonne nouvelle, ce profil pardonne naturellement les erreurs de récupération. On peut construire un volume progressif sans craindre l\'épuisement.',
+          examples: [
+            { title: 'Alternance marche-course progressive', text: '1 minute de course pour 1 minute de marche, répété 10 à 15 fois, en augmentant le temps de course chaque semaine.', why: 'Cette progression douce permet aux structures articulaires et tendineuses de s\'adapter au même rythme que le système cardiovasculaire, qui lui progresse plus vite chez ce profil.' },
+            { title: 'Sortie continue à effort conversationnel', text: 'Course continue à allure très facile, capable de tenir une conversation tout du long, durée progressive semaine après semaine.', why: 'Construire d\'abord la régularité avant l\'intensité exploite ta capacité naturelle à récupérer vite, ce qui te permet d\'enchaîner les séances sans risque de blessure de surcharge.' }
+          ],
+          target: 'Repère concret de progression : courir 30 minutes en continu à allure conversationnelle, sans essoufflement marqué.'
+        }
+      }
+    },
+    FT: {
+      label: 'Profil explosif (FT)',
+      generic: {
+        text: 'Ton profil a une dominante de fibres rapides, capables de produire beaucoup de force et de vitesse, mais avec une densité mitochondriale plus faible et une tolérance lactique prolongée moindre. La fatigue s\'installe donc plus vite sur les efforts longs, c\'est le vrai chantier ici.',
+        examples: [
+          { title: 'Sandwich aérobie', text: '45 minutes d\'endurance facile encadrant un bloc central de 20 minutes à allure seuil, sans interruption.', why: 'La difficulté pour ton profil n\'est pas l\'intensité mais la durée. Insérer le bloc intense au milieu, en fatigue progressive, construit la capacité à tenir un effort soutenu plus longtemps que ce qui vient naturellement.' },
+          { title: 'Côtes longues, force spécifique', text: '5 à 6 fois 3 minutes en montée modérée à allure seuil perçue, retour en footing.', why: 'La pente régule naturellement l\'allure et limite le risque de surcharge lactique brutale que tu subis plus vite sur plat à la même intensité, tout en construisant la force endurance qui te manque.' }
+        ],
+        target: 'Repère concret de progression : tenir un effort continu de 20 minutes à allure seuil sans avoir besoin de ralentir sur la deuxième moitié.'
+      },
+      byDistance: {
+        '5k': {
+          text: 'Format qui colle bien à ton profil grâce à ta vitesse de pointe. Le travail prioritaire consiste à transformer cette vitesse brute en vitesse tenue sur la totalité de la course.',
+          examples: [
+            { title: 'Répétitions longues fractionnées', text: '4 fois 1000m à allure 5km, récupération courte de 90 secondes, volume total volontairement limité.', why: 'Le repos court t\'empêche de récupérer complètement entre les répétitions, ce qui force ton métabolisme à mieux gérer l\'accumulation de lactate, ta principale limite sur cette distance.' },
+            { title: 'Pyramide montante en intensité', text: '300m, 400m, 500m, 400m, 300m à allure 3km, récupération égale à la moitié du temps de course.', why: 'La variation de distance maintient l\'attention nerveuse et exploite ta capacité de production de force sur des segments où la fatigue lactique n\'a pas encore le temps de s\'installer complètement.' }
+          ],
+          target: 'Repère concret de progression : courir 3km d\'affilée à ton allure cible sur 5km sans ralentissement dans le dernier tiers.'
+        },
+        '10k': {
+          text: 'Ta vitesse de pointe est un atout, mais il faut construire la capacité à la maintenir sur la durée, ce qui ne vient pas naturellement à ton profil.',
+          examples: [
+            { title: 'Seuil fractionné en cascade', text: '5 fois 1000m à allure seuil, récupération courte et décroissante : 90 secondes puis 75 puis 60 secondes sur les dernières répétitions.', why: 'Réduire le temps de repos en cours de séance simule la fatigue progressive d\'une vraie course de 10km, situation où ton profil a tendance à craquer faute d\'habitude.' },
+            { title: 'Sortie longue avec finish contrôlé', text: 'Sortie de 50 minutes en endurance facile, terminée par 2km à allure 10km.', why: 'Insérer l\'allure cible en fin de sortie, sur des jambes déjà sollicitées, t\'entraîne directement à reproduire la dernière portion de course, ton point faible habituel.' }
+          ],
+          target: 'Repère concret de progression : courir les 5 derniers kilomètres d\'une sortie longue à allure proche de l\'allure 10km sans dégradation technique.'
+        },
+        'semi': {
+          text: 'Distance exigeante pour ton profil, la gestion d\'allure est ton enjeu numéro un, bien avant la vitesse qui est déjà acquise.',
+          examples: [
+            { title: 'Negative split obligatoire', text: 'Sortie longue de 16km, les 8 premiers en endurance facile, les 8 derniers 10 à 15 secondes par km plus rapides.', why: 'Apprendre à accélérer plutôt qu\'à tenir est une compétence rare chez ton profil, naturellement porté à partir vite et à payer la note ensuite. Cette séance inverse littéralement ce réflexe.' },
+            { title: 'Blocs seuil avec repos qui se réduit', text: '4 fois 12 minutes à allure seuil, récupération qui passe de 3 minutes à 90 secondes au fil de la séance.', why: 'Réduire progressivement le repos t\'oblige à gérer un début de fatigue cumulative similaire à celle ressentie en deuxième partie de semi, sans jamais aller jusqu\'à l\'épuisement complet.' }
+          ],
+          target: 'Repère concret de progression : réussir une sortie longue de 16km en accélérant sur les 4 derniers kilomètres plutôt qu\'en ralentissant.'
+        },
+        'marathon': {
+          text: 'Format qui demande un travail de fond important pour ton profil. Priorité absolue au volume aérobie et à l\'endurance de force, pour compenser ce qui n\'est pas acquis naturellement.',
+          examples: [
+            { title: 'Sortie longue stable sans variation', text: 'Sortie de plus de 2 heures à allure modérée parfaitement stable, sans aucune variation d\'intensité.', why: 'Ton profil a tendance à vouloir accélérer ou jouer avec le rythme. Forcer une allure rigoureusement constante construit la patience physiologique nécessaire sur 42km, où chaque variation coûte cher en glycogène.' },
+            { title: 'Renforcement bas du corps à hautes répétitions', text: 'Circuit de squats, fentes et mollets en séries de 15 à 20 répétitions, charges modérées, deux fois par semaine.', why: 'Les hautes répétitions à charge modérée développent l\'endurance musculaire locale, qualité peu sollicitée par tes fibres rapides habituées à des efforts courts et puissants.' }
+          ],
+          target: 'Repère concret de progression : enchaîner une sortie longue de référence sans baisse de forme nette dans les 10 derniers kilomètres.'
+        },
+        'trail': {
+          text: 'Ta puissance est un vrai atout sur les portions techniques et les relances. Le travail porte sur la gestion de l\'effort prolongé, point faible classique de ce profil sur les longues distances.',
+          examples: [
+            { title: 'Sortie longue à allure volontairement basse', text: 'Sortie de 2 heures à une allure perçue comme presque trop facile, en te forçant à ralentir.', why: 'Ton réflexe naturel est de pousser l\'allure. Sur un format long, c\'est exactement ce qui te fait imploser. S\'entraîner consciemment à ralentir construit la discipline qui te manque sur ce terrain.' },
+            { title: 'Montées courtes explosives', text: '8 à 10 fois 1 à 2 minutes en montée raide, intensité élevée, descente en récupération complète.', why: 'Ce format court et intense exploite directement ta force naturelle sans te forcer dans un registre d\'endurance pure où tu es moins efficace, tout en gardant un vrai bénéfice cardio-vasculaire.' }
+          ],
+          target: 'Repère concret de progression : terminer une sortie longue technique en conservant une capacité de relance nette sur les 2 derniers kilomètres roulants.'
+        },
+        'ultra': {
+          text: 'Format qui challenge directement ton profil naturel. Travail prioritaire sur la capacité aérobie de fond et la gestion mentale de la durée, bien plus que sur la vitesse déjà disponible.',
+          examples: [
+            { title: 'Back to back avec marche imposée', text: 'Deux sorties consécutives de 2 heures sur deux jours, en intégrant des phases de marche même en terrain roulant.', why: 'Habituer ton système nerveux à accepter la marche en pleine course est essentiel pour un profil explosif qui a tendance à vouloir courir tant que possible, au prix d\'un effondrement plus tard.' },
+            { title: 'Sortie longue à intensité strictement basse', text: 'Sortie de 3 à 4 heures à une fréquence cardiaque plafonnée volontairement basse, quitte à marcher pour la respecter.', why: 'Cette contrainte t\'empêche de puiser trop vite dans tes réserves de glycogène, ressource que ton profil consomme plus vite à allure identique qu\'un profil endurant.' }
+          ],
+          target: 'Repère concret de progression : avoir testé au moins un enchaînement de deux sorties longues consécutives sans signe d\'épuisement excessif au réveil du lendemain.'
+        },
+        'reprise': {
+          text: 'Progression rapide attendue sur les premières semaines grâce à ta capacité neuromusculaire. Attention à la régularité, qui est le point faible classique des profils explosifs en reprise.',
+          examples: [
+            { title: 'Sorties courtes mais très régulières', text: 'Course continue de 20 minutes à allure modérée, 4 fois par semaine plutôt que 2 longues sorties.', why: 'Ton profil progresse vite mais se blesse aussi plus facilement en cas de pic isolé suivi d\'arrêt. Répartir le volume sur plus de séances courtes construit la régularité sans solliciter excessivement les tendons.' },
+            { title: 'Accélérations ludiques intégrées', text: 'Sortie facile de 25 minutes avec 4 à 6 accélérations progressives de 15 secondes, sans forcer.', why: 'Réintroduire un peu de stimulus rapide tôt dans la reprise exploite ton point fort naturel et entretient la motivation, sans le volume qui te mettrait en risque de blessure.' }
+          ],
+          target: 'Repère concret de progression : avoir tenu un volume hebdomadaire stable sur 4 semaines consécutives, sans pic suivi d\'une coupure.'
+        }
+      }
+    },
+    Hybride: {
+      label: 'Profil hybride',
+      generic: {
+        text: 'Ton profil est équilibré entre fibres rapides et lentes, ce qui est un vrai atout polyvalent. L\'enjeu est de ne pas rester généraliste et d\'orienter le travail selon l\'objectif précis plutôt que de mixer sans logique.',
+        examples: [
+          { title: 'Bloc seuil avec rappel de vitesse', text: '20 minutes continues à allure seuil, suivies de 6 fois 300m plus rapides.', why: 'Ton profil supporte de combiner les deux qualités dans la même séance sans s\'épuiser prématurément, contrairement à un profil typé qui devrait isoler chaque filière.' },
+          { title: 'Fartlek libre par sensations', text: '40 minutes en variant librement l\'allure entre facile et rapide selon le ressenti, sans structure imposée.', why: 'Cette liberté exploite ta capacité à passer d\'un registre à l\'autre sans transition coûteuse, qualité propre aux profils mixtes.' }
+        ],
+        target: 'Repère concret de progression : être capable d\'enchaîner un bloc seuil et des répétitions rapides dans la même séance sans grosse perte de qualité sur la deuxième partie.'
+      },
+      byDistance: {
+        '5k': {
+          text: 'Bonne base pour ce format. Le travail se concentre sur l\'intensité haute pour exploiter la polyvalence vers la vitesse, sans négliger le fond.',
+          examples: [
+            { title: 'Répétitions moyennes rythmées', text: '6 fois 500m à allure 5km, récupération courte de 90 secondes.', why: 'Ce format à mi-chemin entre vitesse pure et endurance exploite directement l\'équilibre de ton profil entre les deux filières énergétiques.' },
+            { title: 'Double bloc intensité croissante', text: 'Premier bloc de 4 fois 300m à allure 3km, puis après 3 minutes de repos, 4 fois 200m à allure 1500m.', why: 'Augmenter l\'intensité en deuxième partie de séance, alors que la fatigue s\'installe, teste ta capacité à mobiliser successivement tes deux types de fibres.' }
+          ],
+          target: 'Repère concret de progression : courir l\'intégralité de la distance test à allure cible avec une sensation de réserve dans les 500 derniers mètres.'
+        },
+        '10k': {
+          text: 'Distance qui te convient bien. Mix de séances seuil et de répétitions courtes pour construire une allure de course solide et tenue.',
+          examples: [
+            { title: 'Bloc seuil puis rappel vitesse', text: '20 minutes à allure seuil suivies de 4 fois 200m plus rapides, dans la même séance.', why: 'Construire le volume d\'abord puis solliciter la vitesse en fatigue partielle reproduit le scénario d\'une fin de 10km où il faut accélérer malgré l\'accumulation de fatigue.' },
+            { title: 'Répétitions kilométriques à allure cible', text: '5 fois 1000m à allure cible 10km, récupération courte de 90 secondes.', why: 'Ce format teste directement ta capacité à reproduire l\'allure de course plusieurs fois de suite, ce qui est la vraie compétence recherchée sur cette distance.' }
+          ],
+          target: 'Repère concret de progression : tenir l\'allure cible sur la totalité de la distance test, avec une marge de vitesse perceptible en réserve.'
+        },
+        'semi': {
+          text: 'Format équilibré, comme ce profil. Travail combiné sur le seuil long et les sorties longues à allure spécifique.',
+          examples: [
+            { title: 'Sortie longue avec bloc central', text: 'Sortie de 18km avec un bloc de 30 minutes à allure semi inséré au milieu du parcours.', why: 'Insérer l\'effort spécifique au milieu, plutôt qu\'au début ou à la fin, teste ta capacité à monter en intensité puis revenir au calme, transition que ton profil gère naturellement bien.' },
+            { title: 'Blocs seuil rapprochés', text: '4 fois 8 minutes à allure seuil, récupération courte de 2 minutes entre chaque bloc.', why: 'La récupération courte entre les blocs construit la résistance à la fatigue cumulative typique de la deuxième moitié d\'un semi, sans le risque d\'un seuil continu trop long.' }
+          ],
+          target: 'Repère concret de progression : tenir l\'allure semi visée sur un tiers de la distance totale, en milieu de sortie longue, sans dérive cardiaque.'
+        },
+        'marathon': {
+          text: 'Ce profil permet plusieurs approches. Le choix se fera entre orientation volume ou orientation allure selon l\'historique d\'entraînement.',
+          examples: [
+            { title: 'Sortie longue progressive en trois temps', text: 'Sortie de 28km divisée en trois tiers, chaque tiers couru 10 secondes par km plus vite que le précédent.', why: 'La progression en trois paliers distincts, plutôt qu\'une accélération continue, est plus facile à gérer mentalement et exploite ta capacité d\'adaptation aux changements de rythme.' },
+            { title: 'Blocs allure marathon fractionnés', text: '3 fois 15 minutes à allure marathon, récupération courte de 3 minutes entre chaque bloc.', why: 'Fractionner l\'allure marathon en blocs plutôt qu\'en continu permet d\'accumuler plus de kilomètres à cette allure précise sans la fatigue excessive d\'un effort ininterrompu.' }
+          ],
+          target: 'Repère concret de progression : terminer une sortie longue progressive de 30km sans dégradation dans le dernier tiers.'
+        },
+        'trail': {
+          text: 'Bonne adaptabilité aux terrains variés. Travail sur le renforcement et la gestion du dénivelé pour exploiter la polyvalence naturelle.',
+          examples: [
+            { title: 'Sortie mixte plat et montée', text: 'Sortie de 90 minutes alternant portions roulantes rapides en plat et montées techniques soutenues.', why: 'Cette alternance constante exploite directement ton profil mixte, capable de produire de la vitesse sur le plat et de la force en montée sans devoir choisir une spécialisation.' },
+            { title: 'Circuit de renforcement complet', text: 'Circuit alternant squats, gainage et pas chassés latéraux, 3 tours, une fois par semaine.', why: 'Un renforcement généraliste plutôt que ciblé correspond à ton profil qui n\'a pas un point faible unique à corriger en priorité, mais bénéficie d\'une stabilité globale renforcée.' }
+          ],
+          target: 'Repère concret de progression : gérer aussi bien les portions rapides que les montées sur une même sortie longue, sans grosse chute de rythme entre les deux.'
+        },
+        'ultra': {
+          text: 'Profil capable de bien gérer la distance, à condition de construire progressivement la capacité aérobie de fond nécessaire.',
+          examples: [
+            { title: 'Sortie longue stable et nutrition testée', text: 'Sortie de 3 heures à allure modérée stable, protocole de nutrition identique à celui prévu en course.', why: 'À cette durée, la régularité de l\'allure compte plus que le profil musculaire. Ton équilibre naturel te permet de tenir cette allure stable sans effort de gestion supplémentaire.' },
+            { title: 'Portion technique en fin de sortie longue', text: 'Sortie de 2h30 en endurance, terminée par 30 minutes de terrain technique varié.', why: 'Tester le terrain technique en fatigue, plutôt qu\'à froid, prépare directement à la situation réelle de fin d\'ultra où la lucidité technique diminue avec la fatigue.' }
+          ],
+          target: 'Repère concret de progression : avoir validé une sortie longue de référence proche des conditions de course, allure et nutrition incluses.'
+        },
+        'reprise': {
+          text: 'Profil flexible, idéal pour une reprise structurée sans contrainte particulière.',
+          examples: [
+            { title: 'Sortie progressive en durée', text: 'Course continue en endurance facile, durée augmentée de 5 minutes chaque semaine.', why: 'Cette progression linéaire et simple convient à un profil qui n\'a pas de point faible particulier à corriger en priorité durant cette phase initiale.' },
+            { title: 'Accélérations ponctuelles en fin de sortie', text: 'Sortie facile de 25 minutes terminée par 3 à 4 accélérations progressives de 20 secondes.', why: 'Introduire un peu de vitesse en fin de séance, une fois l\'échauffement complet, exploite ta polyvalence naturelle sans risquer la fraîcheur du début de reprise.' }
+          ],
+          target: 'Repère concret de progression : avoir construit une régularité d\'entraînement sur 4 semaines consécutives, avec une allure qui progresse naturellement.'
+        }
+      }
+    }
+  };
+
+  function getFiberKey(profilLabel) {
+    if (profilLabel.indexOf('ST') === 0) return 'ST';
+    if (profilLabel.indexOf('FT') === 0) return 'FT';
+    return 'Hybride';
+  }
+
+  function renderFiberReco(profilLabel, distanceKey) {
+    var fiberKey = getFiberKey(profilLabel);
+    var reco = FIBER_RECOS[fiberKey];
+    var data = reco.byDistance[distanceKey] || reco.generic;
+    var el = document.getElementById('fiberReco');
+    var examplesHtml = data.examples.map(function (ex) {
+      return '<div class="fiber-block">' +
+        '<span class="fiber-tag">' + ex.title + '</span>' +
+        '<div style="margin-bottom: 8px;">' + ex.text + '</div>' +
+        '<div class="fiber-why"><i>Pourquoi cette séance pour toi</i> : ' + ex.why + '</div>' +
+        '</div>';
+    }).join('');
+    el.innerHTML =
+      '<div class="section-title" style="font-size: 15px; margin-bottom: 2px;">' + reco.label + ', ce qui va faire la différence pour toi</div>' +
+      '<div class="section-sub" style="margin-bottom: 12px;">' + data.text + '</div>' +
+      examplesHtml +
+      '<div class="fiber-block"><span class="fiber-tag">Repère concret de progression</span>' + data.target + '</div>';
+  }
+
+  function detectGoalProfile(goalText) {
+    var t = (goalText || '').toLowerCase();
+    var profiles = [
+      {
+        key: 'ultra',
+        match: /ultra|100\s*km|100km|trail.*(60|70|80|90|100)|backyard/,
+        label: 'Ultra-trail',
+        weeks: '24–28 semaines',
+        phases: [
+          { name: 'Phase 1 : Fondation', text: 'volume horaire progressif, renforcement, sorties longues en nature' },
+          { name: 'Phase 2 : Spécifique', text: 'gestion du dénivelé, marche active en côte, nutrition longue durée' },
+          { name: 'Phase 3 : Spécifique course', text: 'simulation des conditions de course, gestion de la fatigue cumulée' },
+          { name: 'Phase 4 : Affûtage', text: 'réduction du volume, maintien de l\'intensité, récupération active' }
+        ]
+      },
+      {
+        key: 'trail',
+        match: /trail|d\+|dénivelé|montagne|ultra-trail/,
+        label: 'Trail',
+        weeks: '16–20 semaines',
+        phases: [
+          { name: 'Phase 1 : Foncier', text: 'volume progressif, renforcement spécifique, technique de descente' },
+          { name: 'Phase 2 : Spécifique', text: 'travail du dénivelé, sorties longues avec D+ ciblé' },
+          { name: 'Phase 3 : Affûtage', text: 'réduction du volume, intensité maintenue, reconnaissance parcours' }
+        ]
+      },
+      {
+        key: 'marathon',
+        match: /marathon(?!.*semi)/,
+        label: 'Marathon',
+        weeks: '20–24 semaines',
+        phases: [
+          { name: 'Phase 1 : Foncier', text: 'volume progressif, développement de la base aérobie' },
+          { name: 'Phase 2 : Spécifique', text: 'introduction du seuil, sorties longues avec segments allure cible' },
+          { name: 'Phase 3 : Pic', text: 'volume maximal, séances longues à allure marathon' },
+          { name: 'Phase 4 : Affûtage', text: 'réduction progressive du volume, intensité maintenue' }
+        ]
+      },
+      {
+        key: 'semi',
+        match: /semi|21\s*km|21,1|half/,
+        label: 'Semi-marathon',
+        weeks: '14–16 semaines',
+        phases: [
+          { name: 'Phase 1 : Foncier', text: 'volume progressif, développement de la base aérobie' },
+          { name: 'Phase 2 : Spécifique', text: 'travail du seuil, allures cibles sur segments longs' },
+          { name: 'Phase 3 : Affûtage', text: 'réduction du volume, intensité maintenue jusqu\'à la course' }
+        ]
+      },
+      {
+        key: '10k',
+        match: /10\s*km|10km/,
+        label: '10 km',
+        weeks: '8–12 semaines',
+        phases: [
+          { name: 'Phase 1 : Base', text: 'volume modéré, travail aérobie, introduction du seuil' },
+          { name: 'Phase 2 : Spécifique', text: 'séances à allure cible, travail de la VMA courte' },
+          { name: 'Phase 3 : Affûtage', text: 'réduction du volume, dernières séances de rappel' }
+        ]
+      },
+      {
+        key: '5k',
+        match: /5\s*km|5km/,
+        label: '5 km',
+        weeks: '6–8 semaines',
+        phases: [
+          { name: 'Phase 1 : Base', text: 'travail aérobie, premières séances de VMA' },
+          { name: 'Phase 2 : Spécifique', text: 'allure cible, fractionné court intense' },
+          { name: 'Phase 3 : Affûtage', text: 'réduction du volume, fraîcheur pour le jour J' }
+        ]
+      },
+      {
+        key: 'reprise',
+        match: /reprise|débuter|débutant|recommence|perte de poids|forme/,
+        label: 'Reprise / remise en forme',
+        weeks: '8–12 semaines',
+        phases: [
+          { name: 'Phase 1 : Réadaptation', text: 'volume très progressif, alternance marche-course si besoin' },
+          { name: 'Phase 2 : Construction', text: 'régularité, premiers repères d\'allure' },
+          { name: 'Phase 3 : Consolidation', text: 'volume stabilisé, premiers objectifs courts' }
+        ]
+      }
+    ];
+
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].match.test(t)) return profiles[i];
+    }
+    // fallback générique si l'objectif n'est pas reconnu
+    return {
+      key: 'generic',
+      label: null,
+      weeks: '12–16 semaines',
+      phases: [
+        { name: 'Phase 1 : Foncier', text: 'volume progressif, développement de la base aérobie' },
+        { name: 'Phase 2 : Spécifique', text: 'introduction du seuil, allures cibles travaillées' },
+        { name: 'Phase 3 : Affûtage', text: 'réduction du volume, intensité maintenue' }
+      ]
+    };
+  }
+
+  function renderPlanTeaser(goalText) {
+    var profile = detectGoalProfile(goalText);
+    var title = document.getElementById('planTitle');
+    var sub = document.getElementById('planSub');
+    var phasesEl = document.getElementById('planPhases');
+
+    title.textContent = profile.label ? ('Structure de plan, ' + profile.label) : 'Aperçu de structure de plan';
+    sub.textContent = 'Programmation indicative sur ' + profile.weeks + ', basée sur ton profil.';
+
+    phasesEl.innerHTML = profile.phases.map(function (p) {
+      var parts = p.name.split(' : ');
+      return '<div class="plan-week"><div class="plan-week-num">' + parts[0] + '</div><div class="plan-week-text"><strong style="color: var(--text); font-weight: 700;">' + (parts[1] || '') + ' : </strong>' + p.text + '</div></div>';
+    }).join('');
+
+    return profile;
+  }
+
+  function renderCSExplain(cs, vma) {
+    var el = document.getElementById('csExplain');
+    el.innerHTML = '<strong>Qu\'est-ce que ta vitesse critique (' + cs + ' km/h) ?</strong> C\'est l\'allure la plus élevée que ton système aérobie peut tenir indéfiniment sans accumuler de lactate de façon irréversible. Concrètement, c\'est ton "moteur de fond" : toute allure en dessous est relativement gérable sur la durée, toute allure au-dessus puise dans tes réserves anaérobies et crée une dette que ton corps devra rembourser. Ta VMA de ' + vma + ' km/h représente la vitesse à laquelle tu consommes 100% de ton VO2max : c\'est ton plafond d\'intensité aérobie. Tout ce qui suit dans ton bilan est calculé à partir de ces deux marqueurs.';
+  }
+
+  function renderFiberBadge(profilLabel) {
+    var el = document.getElementById('fiberBadge');
+    var fiberKey = getFiberKey(profilLabel);
+    var content = {
+      ST: {
+        cls: 'st',
+        title: 'Profil endurant, fibres lentes dominantes (ST)',
+        desc: 'Tes fibres lentes ont une densité mitochondriale élevée et une excellente vascularisation capillaire. Tu récupères vite entre les efforts, tu toléres des volumes d\'entraînement importants et ta clairance du lactate est naturellement bonne. Ton point à développer : la vitesse de contraction et la force explosive, qui ne viennent pas naturellement à ce profil.'
+      },
+      FT: {
+        cls: 'ft',
+        title: 'Profil explosif, fibres rapides dominantes (FT)',
+        desc: 'Tes fibres rapides produisent une force de contraction élevée et génèrent de la vitesse facilement. En revanche, leur densité mitochondriale plus faible limite ta tolérance aux efforts longs et ta clairance du lactate est moins efficace sur la durée. Ton point à développer : l\'endurance spécifique, la capacité à maintenir une allure soutenue sans t\'effondrer.'
+      },
+      Hybride: {
+        cls: 'hybrid',
+        title: 'Profil mixte, équilibre fibres rapides et lentes (Hybride)',
+        desc: 'Ton profil présente un équilibre entre fibres rapides et lentes, ce qui te donne une vraie polyvalence entre les formats courts et longs. Tu n\'as pas de point faible marqué dans un sens ou dans l\'autre, ce qui signifie que ta progression dépend surtout de la cohérence de ton orientation d\'entraînement selon ton objectif précis.'
+      }
+    };
+    var c = content[fiberKey] || content.Hybride;
+    el.className = 'fiber-badge ' + c.cls;
+    el.innerHTML = '<strong>' + c.title + '</strong>' + c.desc;
+  }
+
+  function buildZones(vma) {
+    var zones = [
+      { name: 'Récupération', sub: '< 60% VMA', low: 0, high: 0.60 },
+      { name: 'Endurance fondamentale', sub: '60–70% VMA', low: 0.60, high: 0.70 },
+      { name: 'Tempo', sub: '70–80% VMA', low: 0.70, high: 0.80 },
+      { name: 'Seuil long', sub: '80–85% VMA', low: 0.80, high: 0.85 },
+      { name: 'Seuil court', sub: '85–90% VMA', low: 0.85, high: 0.90 },
+      { name: 'VO2max / VMA', sub: '> 90% VMA', low: 0.90, high: 1.0 }
+    ];
+    var rows = '<tr><th>Zone</th><th>Allure</th></tr>';
+    zones.forEach(function (z) {
+      var highPace = paceFromKmh(vma * z.high);
+      var lowPace = z.low > 0 ? paceFromKmh(vma * z.low) : null;
+      var paceLabel = lowPace ? (highPace + '–' + lowPace + '/km') : ('< ' + highPace + '/km');
+      rows += '<tr><td class="zone-name">' + z.name + '<br><span style="font-size:11px;color:var(--text-dim);font-weight:400">' + z.sub + '</span></td><td class="zone-pace">' + paceLabel + '</td></tr>';
+    });
+    document.getElementById('zoneTable').innerHTML = rows;
+  }
+
+  function buildDistPredictions(vma) {
+    var D = [
+      { nm: '3 km', km: 3, lo: 0.90, hi: 0.95 },
+      { nm: '5 km', km: 5, lo: 0.86, hi: 0.92 },
+      { nm: '10 km', km: 10, lo: 0.82, hi: 0.875 },
+      { nm: 'Semi', km: 21.097, lo: 0.79, hi: 0.84 },
+      { nm: 'Marathon', km: 42.195, lo: 0.76, hi: 0.81 }
+    ];
+    var rows = '<tr><th>Distance</th><th>Chrono estimé</th><th>Allure</th></tr>';
+    var results = {};
+    D.forEach(function (d) {
+      var fastSec = (d.km / (vma * d.hi)) * 3600;
+      var slowSec = (d.km / (vma * d.lo)) * 3600;
+      var fast = fmtChrono(d.km, vma * d.hi);
+      var slow = fmtChrono(d.km, vma * d.lo);
+      var paceFast = paceFromKmh(vma * d.hi);
+      var paceSlow = paceFromKmh(vma * d.lo);
+      rows += '<tr><td class="zone-name">' + d.nm + '</td><td class="zone-pace">' + fast + ' – ' + slow + '</td><td style="font-size:12px;color:var(--text-dim);">' + paceFast + ' – ' + paceSlow + '/km</td></tr>';
+      results[d.nm] = { fastSec: fastSec, slowSec: slowSec };
+    });
+    document.getElementById('distTable').innerHTML = rows;
+    return results;
+  }
+
+  var TIME_BARRIERS = {
+    '5k': { label: '5 km', secs: [25*60, 24*60, 23*60, 22*60, 21*60, 20*60, 19*60, 18*60] },
+    '10k': { label: '10 km', secs: [60*60, 55*60, 50*60, 45*60, 40*60, 39*60, 38*60, 37*60, 36*60, 35*60] },
+    'semi': { label: 'semi', secs: [2*3600, 1*3600+50*60, 1*3600+45*60, 1*3600+40*60, 1*3600+35*60, 1*3600+30*60, 1*3600+25*60] },
+    'marathon': { label: 'marathon', secs: [4*3600+30*60, 4*3600, 3*3600+45*60, 3*3600+30*60, 3*3600+15*60, 3*3600] }
+  };
+
+  function fmtBarrier(secs) {
+    if (secs < 3600) {
+      var m = Math.floor(secs / 60);
+      return m + ' min';
+    }
+    var h = Math.floor(secs / 3600);
+    var m2 = Math.round((secs % 3600) / 60);
+    return m2 > 0 ? (h + 'h' + (m2 < 10 ? '0' : '') + m2) : (h + 'h');
+  }
+
+  function buildPainPoint(goalKey, distResults) {
+    var barrier = TIME_BARRIERS[goalKey];
+    if (!barrier) return null;
+
+    var distKey = { '5k': '5 km', '10k': '10 km', 'semi': 'Semi', 'marathon': 'Marathon' }[goalKey];
+    var result = distResults[distKey];
+    if (!result) return null;
+
+    var currentFastSec = result.fastSec;
+
+    // Trouve le palier symbolique le plus proche, juste en dessous du chrono actuel le plus rapide
+    // barrier.secs est ordonné du plus lent au plus rapide : on prend le premier qui est sous le chrono actuel
+    var nextBarrier = null;
+    for (var i = 0; i < barrier.secs.length; i++) {
+      if (barrier.secs[i] < currentFastSec) {
+        nextBarrier = barrier.secs[i];
+        break;
+      }
+    }
+
+    if (!nextBarrier) return null;
+
+    return 'D\'après ton profil actuel, passer sous les ' + fmtBarrier(nextBarrier) + ' au ' + barrier.label + ' est un objectif réaliste avec une préparation structurée. C\'est exactement le type de cap qu\'on construit ensemble en coaching.';
+  }
+
+  async function saveLead(lead) {
+    try {
+      var res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(lead)
+      });
+      return res.ok;
+    } catch (e) {
+      console.error('Erreur envoi formulaire', e);
+      return false;
+    }
+  }
+
+  function unlock() {
+    var email = document.getElementById('email').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var goal = document.getElementById('goal').value.trim();
+    var err = document.getElementById('gateErr');
+    var btn = document.getElementById('unlockBtn');
+
+    if (!email || !phone || !goal) {
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Un instant...';
+
+    var lead = {
+      _subject: 'Nouveau lead calculateur CS, ' + goal,
+      email: email,
+      phone: phone,
+      goal: goal,
+      d3: state.d3,
+      d12: state.d12,
+      cs_kmh: state.cs,
+      vma_kmh: state.vma,
+      w_prime_m: state.wPrime,
+      profil_fibreux: state.profil,
+      timestamp: new Date().toISOString(),
+      source: 'landing-calculateur-cs'
+    };
+
+    saveLead(lead).then(function (sent) {
+      // Masquer le bloc blur/teaser maintenant qu'on a les vraies données
+      document.getElementById('resultTeaser').style.display = 'none';
+
+      renderCSExplain(state.cs, state.vma);
+      renderFiberBadge(state.profil);
+
+      buildZones(state.vma);
+      var distResults = buildDistPredictions(state.vma);
+      var goalProfile = renderPlanTeaser(goal);
+      renderFiberReco(state.profil, goalProfile.key);
+
+      document.getElementById('vmaValue').textContent = state.vma;
+
+      // Couleur du profil fibreux dynamique
+      var profilEl = document.getElementById('profilValue');
+      profilEl.textContent = state.profil;
+      var fk = getFiberKey(state.profil);
+      profilEl.style.color = fk === 'ST' ? '#5bb8f5' : fk === 'FT' ? 'var(--accent)' : '#9b95ff';
+
+      var painPointEl = document.getElementById('painPoint');
+      var painPointText = buildPainPoint(goalProfile.key, distResults);
+      painPointEl.innerHTML = painPointText ? ('<div class="pain-point">' + painPointText + '</div>') : '';
+
+      document.getElementById('gateForm').style.display = 'none';
+      document.getElementById('unlockedSection').style.display = 'block';
+      document.getElementById('unlockedSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', calcCS);
+  document.getElementById('unlockBtn').addEventListener('click', unlock);
+
+  ['d3', 'd12'].forEach(function (id) {
+    document.getElementById(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') calcCS();
+    });
+  });
+  ['email', 'phone', 'goal'].forEach(function (id) {
+    document.getElementById(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') unlock();
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
