@@ -238,6 +238,19 @@
   }
 </style>
 </head>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1316019647114072');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1316019647114072&ev=PageView&noscript=1"/></noscript>
+<!-- Fin Meta Pixel -->
 <body>
 
 <div class="wrap">
@@ -348,8 +361,26 @@
           <input type="tel" id="phone" placeholder="06 12 34 56 78">
         </div>
         <div class="field">
-          <label for="goal">Ton objectif / course visée</label>
-          <input type="text" id="goal" placeholder="ex. Marathon de Paris, premier 100km, reprise...">
+          <label for="goal">Ton objectif / distance visée</label>
+          <select id="goal" onchange="toggleTrailFields()">
+            <option value="">Choisir...</option>
+            <option value="5km">5 km</option>
+            <option value="10km">10 km</option>
+            <option value="semi">Semi-marathon (21 km)</option>
+            <option value="marathon">Marathon (42 km)</option>
+            <option value="trail">Trail / Ultra-trail</option>
+            <option value="reprise">Reprise / remise en forme</option>
+          </select>
+        </div>
+        <div id="trailFields" style="display:none; gap:10px; grid-template-columns:1fr 1fr; margin-top:2px;">
+          <div class="field">
+            <label for="trailDist">Distance (km)</label>
+            <input type="number" id="trailDist" placeholder="ex. 80" min="10" max="350" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="trailDeniv">Dénivelé (m)</label>
+            <input type="number" id="trailDeniv" placeholder="ex. 4500" min="0" max="30000" inputmode="numeric">
+          </div>
         </div>
         <div class="err" id="gateErr">Merci de remplir les trois champs pour débloquer ton résultat.</div>
         <button class="btn" id="unlockBtn" type="button">Débloquer mes zones et mon plan</button>
@@ -398,10 +429,20 @@
 </div>
 
 <script>
+// Fonction globale appelée depuis le onchange HTML
+function toggleTrailFields() {
+  var goalKey = document.getElementById('goal').value;
+  var trailEl = document.getElementById('trailFields');
+  if (trailEl) {
+    trailEl.style.display = goalKey === 'trail' ? 'grid' : 'none';
+  }
+}
+
 (function () {
   // ⚠️ À REMPLACER avant mise en ligne : colle ici l'URL de ton formulaire Formspree
   // (créée sur formspree.io, format https://formspree.io/f/xxxxxxxx)
   var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mlgyenyn';
+
 
   var state = { d3: null, d12: null, cs: null, vma: null };
 
@@ -678,9 +719,13 @@
   }
 
   function renderFiberReco(profilLabel, distanceKey) {
+    // Mapping clés select → clés byDistance dans FIBER_RECOS
+    var keyMap = { '5km': '5k', '10km': '10k', 'semi': 'semi', 'marathon': 'marathon', 'trail': 'trail', 'reprise': 'reprise' };
+    var mappedKey = keyMap[distanceKey] || distanceKey;
+
     var fiberKey = getFiberKey(profilLabel);
     var reco = FIBER_RECOS[fiberKey];
-    var data = reco.byDistance[distanceKey] || reco.generic;
+    var data = reco.byDistance[mappedKey] || reco.generic;
     var el = document.getElementById('fiberReco');
     var examplesHtml = data.examples.map(function (ex) {
       return '<div class="fiber-block">' +
@@ -696,98 +741,62 @@
       '<div class="fiber-block"><span class="fiber-tag">Repère concret de progression</span>' + data.target + '</div>';
   }
 
-  function detectGoalProfile(goalText) {
-    var t = (goalText || '').toLowerCase();
-    var profiles = [
-      {
-        key: 'ultra',
-        match: /ultra|100\s*km|100km|trail.*(60|70|80|90|100)|backyard/,
-        label: 'Ultra-trail',
-        weeks: '24–28 semaines',
-        phases: [
-          { name: 'Phase 1 : Fondation', text: 'volume horaire progressif, renforcement, sorties longues en nature' },
-          { name: 'Phase 2 : Spécifique', text: 'gestion du dénivelé, marche active en côte, nutrition longue durée' },
-          { name: 'Phase 3 : Spécifique course', text: 'simulation des conditions de course, gestion de la fatigue cumulée' },
-          { name: 'Phase 4 : Affûtage', text: 'réduction du volume, maintien de l\'intensité, récupération active' }
-        ]
-      },
-      {
-        key: 'trail',
-        match: /trail|d\+|dénivelé|montagne|ultra-trail/,
-        label: 'Trail',
-        weeks: '16–20 semaines',
-        phases: [
-          { name: 'Phase 1 : Foncier', text: 'volume progressif, renforcement spécifique, technique de descente' },
-          { name: 'Phase 2 : Spécifique', text: 'travail du dénivelé, sorties longues avec D+ ciblé' },
-          { name: 'Phase 3 : Affûtage', text: 'réduction du volume, intensité maintenue, reconnaissance parcours' }
-        ]
-      },
-      {
-        key: 'marathon',
-        match: /marathon(?!.*semi)/,
-        label: 'Marathon',
-        weeks: '20–24 semaines',
-        phases: [
-          { name: 'Phase 1 : Foncier', text: 'volume progressif, développement de la base aérobie' },
-          { name: 'Phase 2 : Spécifique', text: 'introduction du seuil, sorties longues avec segments allure cible' },
-          { name: 'Phase 3 : Pic', text: 'volume maximal, séances longues à allure marathon' },
-          { name: 'Phase 4 : Affûtage', text: 'réduction progressive du volume, intensité maintenue' }
-        ]
-      },
-      {
-        key: 'semi',
-        match: /semi|21\s*km|21,1|half/,
-        label: 'Semi-marathon',
-        weeks: '14–16 semaines',
-        phases: [
-          { name: 'Phase 1 : Foncier', text: 'volume progressif, développement de la base aérobie' },
-          { name: 'Phase 2 : Spécifique', text: 'travail du seuil, allures cibles sur segments longs' },
-          { name: 'Phase 3 : Affûtage', text: 'réduction du volume, intensité maintenue jusqu\'à la course' }
-        ]
-      },
-      {
-        key: '10k',
-        match: /10\s*km|10km/,
-        label: '10 km',
-        weeks: '8–12 semaines',
-        phases: [
-          { name: 'Phase 1 : Base', text: 'volume modéré, travail aérobie, introduction du seuil' },
-          { name: 'Phase 2 : Spécifique', text: 'séances à allure cible, travail de la VMA courte' },
-          { name: 'Phase 3 : Affûtage', text: 'réduction du volume, dernières séances de rappel' }
-        ]
-      },
-      {
-        key: '5k',
-        match: /5\s*km|5km/,
-        label: '5 km',
-        weeks: '6–8 semaines',
-        phases: [
-          { name: 'Phase 1 : Base', text: 'travail aérobie, premières séances de VMA' },
-          { name: 'Phase 2 : Spécifique', text: 'allure cible, fractionné court intense' },
-          { name: 'Phase 3 : Affûtage', text: 'réduction du volume, fraîcheur pour le jour J' }
-        ]
-      },
-      {
-        key: 'reprise',
-        match: /reprise|débuter|débutant|recommence|perte de poids|forme/,
-        label: 'Reprise / remise en forme',
-        weeks: '8–12 semaines',
-        phases: [
-          { name: 'Phase 1 : Réadaptation', text: 'volume très progressif, alternance marche-course si besoin' },
-          { name: 'Phase 2 : Construction', text: 'régularité, premiers repères d\'allure' },
-          { name: 'Phase 3 : Consolidation', text: 'volume stabilisé, premiers objectifs courts' }
-        ]
-      }
-    ];
-
-    for (var i = 0; i < profiles.length; i++) {
-      if (profiles[i].match.test(t)) return profiles[i];
+  var GOAL_PROFILES = {
+    '5km': {
+      key: '5k', label: '5 km', weeks: '6–8 semaines',
+      phases: [
+        { name: 'Phase 1 : Base', text: 'travail aérobie, premières séances de VMA' },
+        { name: 'Phase 2 : Spécifique', text: 'allure cible, fractionné court intense' },
+        { name: 'Phase 3 : Affûtage', text: 'réduction du volume, fraîcheur pour le jour J' }
+      ]
+    },
+    '10km': {
+      key: '10k', label: '10 km', weeks: '8–12 semaines',
+      phases: [
+        { name: 'Phase 1 : Base', text: 'volume modéré, travail aérobie, introduction du seuil' },
+        { name: 'Phase 2 : Spécifique', text: 'séances à allure cible, travail de la VMA courte' },
+        { name: 'Phase 3 : Affûtage', text: 'réduction du volume, dernières séances de rappel' }
+      ]
+    },
+    'semi': {
+      key: 'semi', label: 'Semi-marathon', weeks: '14–16 semaines',
+      phases: [
+        { name: 'Phase 1 : Foncier', text: 'volume progressif, développement de la base aérobie' },
+        { name: 'Phase 2 : Spécifique', text: 'travail du seuil, allures cibles sur segments longs' },
+        { name: 'Phase 3 : Affûtage', text: 'réduction du volume, intensité maintenue jusqu\'à la course' }
+      ]
+    },
+    'marathon': {
+      key: 'marathon', label: 'Marathon', weeks: '20–24 semaines',
+      phases: [
+        { name: 'Phase 1 : Foncier', text: 'volume progressif, développement de la base aérobie' },
+        { name: 'Phase 2 : Spécifique', text: 'introduction du seuil, sorties longues avec segments allure cible' },
+        { name: 'Phase 3 : Pic', text: 'volume maximal, séances longues à allure marathon' },
+        { name: 'Phase 4 : Affûtage', text: 'réduction progressive du volume, intensité maintenue' }
+      ]
+    },
+    'trail': {
+      key: 'trail', label: 'Trail / Ultra-trail', weeks: null, // calculée dynamiquement selon distance
+      phases: [
+        { name: 'Phase 1 : Foncier', text: 'volume progressif, renforcement spécifique, technique de descente' },
+        { name: 'Phase 2 : Spécifique', text: 'travail du dénivelé, sorties longues avec D+ ciblé, nutrition longue durée' },
+        { name: 'Phase 3 : Spécifique course', text: 'simulation des conditions, gestion de la fatigue cumulée' },
+        { name: 'Phase 4 : Affûtage', text: 'réduction du volume, maintien de l\'intensité, récupération active' }
+      ]
+    },
+    'reprise': {
+      key: 'reprise', label: 'Reprise / remise en forme', weeks: '8–12 semaines',
+      phases: [
+        { name: 'Phase 1 : Réadaptation', text: 'volume très progressif, alternance marche-course si besoin' },
+        { name: 'Phase 2 : Construction', text: 'régularité, premiers repères d\'allure' },
+        { name: 'Phase 3 : Consolidation', text: 'volume stabilisé, premiers objectifs courts' }
+      ]
     }
-    // fallback générique si l'objectif n'est pas reconnu
-    return {
-      key: 'generic',
-      label: null,
-      weeks: '12–16 semaines',
+  };
+
+  function detectGoalProfile(goalKey) {
+    return GOAL_PROFILES[goalKey] || {
+      key: 'generic', label: null, weeks: '12–16 semaines',
       phases: [
         { name: 'Phase 1 : Foncier', text: 'volume progressif, développement de la base aérobie' },
         { name: 'Phase 2 : Spécifique', text: 'introduction du seuil, allures cibles travaillées' },
@@ -796,14 +805,44 @@
     };
   }
 
-  function renderPlanTeaser(goalText) {
-    var profile = detectGoalProfile(goalText);
+  function renderPlanTeaser(goalKey) {
+    var trailDist = document.getElementById('trailDist') ? document.getElementById('trailDist').value : '';
+    var trailDeniv = document.getElementById('trailDeniv') ? document.getElementById('trailDeniv').value : '';
+
+    var profile = detectGoalProfile(goalKey);
     var title = document.getElementById('planTitle');
     var sub = document.getElementById('planSub');
     var phasesEl = document.getElementById('planPhases');
 
-    title.textContent = profile.label ? ('Structure de plan, ' + profile.label) : 'Aperçu de structure de plan';
-    sub.textContent = 'Programmation indicative sur ' + profile.weeks + ', basée sur ton profil.';
+    // Calcul dynamique de la durée trail selon distance + dénivelé (calibré sur littérature TrainingPeaks/UTMB)
+    var weeks = profile.weeks;
+    if (goalKey === 'trail' && trailDist) {
+      var km = parseFloat(trailDist);
+      var deniv = parseFloat(trailDeniv) || 0;
+      // Durées de base selon distance (source : TrainingPeaks, Trail Running Movement, Streek/UTMB)
+      if (km <= 25)       weeks = '8–12 semaines';
+      else if (km <= 50)  weeks = '12–20 semaines';
+      else if (km <= 80)  weeks = '20–24 semaines';
+      else if (km <= 100) weeks = '24–28 semaines';
+      else                weeks = '28–36 semaines';
+      // Bonus dénivelé : +2 à 4 semaines si D+ important (source : TRM coaches)
+      if (deniv >= 3000 && deniv < 5000) {
+        var parts = weeks.split('–');
+        weeks = (parseInt(parts[0]) + 2) + '–' + (parseInt(parts[1]) + 2) + ' semaines';
+      } else if (deniv >= 5000) {
+        var parts = weeks.split('–');
+        weeks = (parseInt(parts[0]) + 4) + '–' + (parseInt(parts[1]) + 4) + ' semaines';
+      }
+    }
+
+    var labelStr = profile.label || 'ton objectif';
+    if (goalKey === 'trail' && trailDist) {
+      labelStr += ' ' + trailDist + 'km';
+      if (trailDeniv) labelStr += ' D+' + trailDeniv + 'm';
+    }
+
+    title.textContent = profile.label ? ('Structure de plan, ' + labelStr) : 'Aperçu de structure de plan';
+    sub.textContent = 'Programmation indicative sur ' + (weeks || '12–16 semaines') + ', basée sur ton profil.';
 
     phasesEl.innerHTML = profile.phases.map(function (p) {
       var parts = p.name.split(' : ');
@@ -887,17 +926,14 @@
   }
 
   var TIME_BARRIERS = {
-    '5k': { label: '5 km', secs: [25*60, 24*60, 23*60, 22*60, 21*60, 20*60, 19*60, 18*60] },
-    '10k': { label: '10 km', secs: [60*60, 55*60, 50*60, 45*60, 40*60, 39*60, 38*60, 37*60, 36*60, 35*60] },
-    'semi': { label: 'semi', secs: [2*3600, 1*3600+50*60, 1*3600+45*60, 1*3600+40*60, 1*3600+35*60, 1*3600+30*60, 1*3600+25*60] },
-    'marathon': { label: 'marathon', secs: [4*3600+30*60, 4*3600, 3*3600+45*60, 3*3600+30*60, 3*3600+15*60, 3*3600] }
+    '5km':     { label: '5 km',    secs: [25*60, 24*60, 23*60, 22*60, 21*60, 20*60, 19*60, 18*60] },
+    '10km':    { label: '10 km',   secs: [60*60, 55*60, 50*60, 45*60, 40*60, 39*60, 38*60, 37*60, 36*60, 35*60] },
+    'semi':    { label: 'semi',    secs: [2*3600, 1*3600+50*60, 1*3600+45*60, 1*3600+40*60, 1*3600+35*60, 1*3600+30*60, 1*3600+25*60] },
+    'marathon':{ label: 'marathon', secs: [4*3600+30*60, 4*3600, 3*3600+45*60, 3*3600+30*60, 3*3600+15*60, 3*3600] }
   };
 
   function fmtBarrier(secs) {
-    if (secs < 3600) {
-      var m = Math.floor(secs / 60);
-      return m + ' min';
-    }
+    if (secs < 3600) { return Math.floor(secs / 60) + ' min'; }
     var h = Math.floor(secs / 3600);
     var m2 = Math.round((secs % 3600) / 60);
     return m2 > 0 ? (h + 'h' + (m2 < 10 ? '0' : '') + m2) : (h + 'h');
@@ -907,24 +943,16 @@
     var barrier = TIME_BARRIERS[goalKey];
     if (!barrier) return null;
 
-    var distKey = { '5k': '5 km', '10k': '10 km', 'semi': 'Semi', 'marathon': 'Marathon' }[goalKey];
+    var distKey = { '5km': '5 km', '10km': '10 km', 'semi': 'Semi', 'marathon': 'Marathon' }[goalKey];
     var result = distResults[distKey];
     if (!result) return null;
 
     var currentFastSec = result.fastSec;
-
-    // Trouve le palier symbolique le plus proche, juste en dessous du chrono actuel le plus rapide
-    // barrier.secs est ordonné du plus lent au plus rapide : on prend le premier qui est sous le chrono actuel
     var nextBarrier = null;
     for (var i = 0; i < barrier.secs.length; i++) {
-      if (barrier.secs[i] < currentFastSec) {
-        nextBarrier = barrier.secs[i];
-        break;
-      }
+      if (barrier.secs[i] < currentFastSec) { nextBarrier = barrier.secs[i]; break; }
     }
-
     if (!nextBarrier) return null;
-
     return 'D\'après ton profil actuel, passer sous les ' + fmtBarrier(nextBarrier) + ' au ' + barrier.label + ' est un objectif réaliste avec une préparation structurée. C\'est exactement le type de cap qu\'on construit ensemble en coaching.';
   }
 
@@ -945,24 +973,43 @@
   function unlock() {
     var email = document.getElementById('email').value.trim();
     var phone = document.getElementById('phone').value.trim();
-    var goal = document.getElementById('goal').value.trim();
+    var goalKey = document.getElementById('goal').value;
     var err = document.getElementById('gateErr');
     var btn = document.getElementById('unlockBtn');
 
-    if (!email || !phone || !goal) {
+    if (!email || !phone || !goalKey) {
       err.style.display = 'block';
       return;
     }
     err.style.display = 'none';
 
+    // Construire le label lisible pour l'email Formspree
+    var GOAL_LABELS = {
+      '5km': '5 km', '10km': '10 km', 'semi': 'Semi-marathon',
+      'marathon': 'Marathon', 'trail': 'Trail / Ultra', 'reprise': 'Reprise / remise en forme'
+    };
+    var goalLabel = GOAL_LABELS[goalKey] || goalKey;
+
+    // Ajouter distance + dénivelé si trail
+    var trailDist = '', trailDeniv = '';
+    if (goalKey === 'trail') {
+      trailDist = document.getElementById('trailDist').value;
+      trailDeniv = document.getElementById('trailDeniv').value;
+      if (trailDist) goalLabel += ' ' + trailDist + 'km';
+      if (trailDeniv) goalLabel += ' D+' + trailDeniv + 'm';
+    }
+
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span>Un instant...';
 
     var lead = {
-      _subject: 'Nouveau lead calculateur CS, ' + goal,
+      _subject: 'Nouveau lead calculateur CS, ' + goalLabel,
       email: email,
       phone: phone,
-      goal: goal,
+      goal: goalLabel,
+      goal_key: goalKey,
+      trail_distance_km: trailDist || null,
+      trail_denivele_m: trailDeniv || null,
       d3: state.d3,
       d12: state.d12,
       cs_kmh: state.cs,
@@ -974,7 +1021,13 @@
     };
 
     saveLead(lead).then(function (sent) {
-      // Masquer le bloc blur/teaser maintenant qu'on a les vraies données
+      // Événement Meta Pixel Lead
+      if (typeof fbq !== 'undefined') {
+        fbq('track', 'Lead', {
+          content_name: goalLabel,
+          content_category: goalKey
+        });
+      }
       document.getElementById('resultTeaser').style.display = 'none';
 
       renderCSExplain(state.cs, state.vma);
@@ -982,7 +1035,7 @@
 
       buildZones(state.vma);
       var distResults = buildDistPredictions(state.vma);
-      var goalProfile = renderPlanTeaser(goal);
+      var goalProfile = renderPlanTeaser(goalKey);
       renderFiberReco(state.profil, goalProfile.key);
 
       document.getElementById('vmaValue').textContent = state.vma;
