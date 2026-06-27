@@ -333,6 +333,28 @@ fbq('track', 'PageView');
           <div class="unit">en mètres</div>
         </div>
       </div>
+      <div class="field" style="margin-top:14px">
+        <label for="goal">Ton objectif / distance visée</label>
+        <select id="goal" onchange="toggleTrailFields()">
+          <option value="">Choisir...</option>
+          <option value="5km">5 km</option>
+          <option value="10km">10 km</option>
+          <option value="semi">Semi-marathon</option>
+          <option value="marathon">Marathon</option>
+          <option value="trail">Trail / Ultra-trail</option>
+          <option value="reprise">Reprise / remise en forme</option>
+        </select>
+      </div>
+      <div id="trailFields" style="display:none;gap:10px;grid-template-columns:1fr 1fr;margin-top:8px">
+        <div class="field">
+          <label for="trailDist">Distance (km)</label>
+          <input type="number" id="trailDist" placeholder="ex. 80" min="10" max="350">
+        </div>
+        <div class="field">
+          <label for="trailDeniv">Dénivelé (m)</label>
+          <input type="number" id="trailDeniv" placeholder="ex. 4500" min="0">
+        </div>
+      </div>
       <div class="err" id="testErr">Vérifie tes deux distances : le 12 minutes doit être supérieur au 3 minutes.</div>
       <button class="btn" id="calcBtn" type="button">Calculer ma vitesse critique</button>
     </div>
